@@ -1,54 +1,74 @@
 package main
 
 import (
-    "fmt"
-    //"image"
-    //"image/color"
-    //"image/png"
-    //"math"
-    //"os"
+	"fmt"
+	"math"
 )
 
-//brute forces to find if number is prime
-func isPrime(guess uint) bool {
-    var i uint
+type coord struct {
+	X, Y, val int
+}
 
-    if(guess % 2 == 0) {
-        return false
-    }
+func isPrime(guess uint32) bool {
+	if guess % 2 == 0 {
+		return false
+	}
+	
+	for i := uint32(3); i < uint32(math.Sqrt(float64(guess))) +1; i += 2 {
+		if guess % i == 0 {
+			return false
+		}
+	}
 
-    for i = 3; i < guess; i += 2 {
-        if(guess % i == 0) {
-            return false
-        }
-    }
-    return true
+	return true
 }
 
 func main() {
-    primes := [50000]uint{2}
-    j := 0
-    var i uint
-    //img := image.NewRGBA(image.Rect(0, 0, 1000, 1000))
+	//primes := []int{2}
+	grid := make([]coord, 1000)
+	//var table [10][10]int
 
-    for i = 3; i < uint(200000); i += 2 {
-        if(isPrime(i) == true) {
-            primes[j] = i
-            j++
-        }
-    }
-    
-    for _, i := range primes {
-        if(i > 0) {
-            fmt.Println(i)
-        }
-    }
-    /* f, err := os.OpenFile("rgb.png", os.O_WRONLY|os.O_CREATE, 0600)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
+	max := 1000
+	x, y := 0, 0
+	direction := true
 
-    defer f.Close()
-    png.Encode(f, img)*/
+	grid[0] = coord{x, y, 2}
+
+	for i, lim := 0, 1; i < max -1; lim++ {
+		if direction == true {
+			for k := 0; k < lim && i < max -1; k++ {
+				x++
+				i++
+				grid[i] = coord{x, y, i +2}
+			}
+			for k := 0; k < lim && i < max -1; k++ {
+				y++
+				i++
+				grid[i] = coord{x, y, i +2}
+			}
+		} else {
+			for k := 0; k < lim && i < max -1; k++ {
+				x--
+				i++
+				grid[i] = coord{x, y, i +2}
+			}
+			for k := 0; k < lim && i < max -1; k++ {
+				y--
+				i++
+				grid[i] = coord{x, y, i +2}
+			}
+		}
+		direction = !direction
+	}
+
+	/*for i := 0; i < len(grid); i++ {
+		table[9 + grid[i].X][9 + grid[i].Y] = grid[i].val
+	}*/
+
+	for i := 0; i < max; i++ {
+		fmt.Printf("{%3d,%3d,%4d}", grid[i].X, grid[i].Y, grid[i].val)
+		if i % 10 == 0 {
+			fmt.Println()
+		}
+	}
 }
